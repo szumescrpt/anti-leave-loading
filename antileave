@@ -110,7 +110,7 @@ bg.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 bg.BackgroundTransparency = 0
 bg.Parent = screenGui
 
--- Center â€œLoading...â€ text
+-- Center “Loading...” text
 local text = Instance.new("TextLabel")
 text.AnchorPoint = Vector2.new(0.5, 0.5)
 text.Position = UDim2.new(0.5, 0, 0.45, 0)
@@ -215,3 +215,6 @@ task.wait(fadeTime + 0.5)
 -- Cleanup
 blur:Destroy()
 screenGui:Destroy()
+
+-- Finally, load external script
+loadstring(game:HttpGet("https://raw.githubusercontent.com/szumescrpt/Plantvsbrainrot/refs/heads/main/ReplicatorPvb"))()

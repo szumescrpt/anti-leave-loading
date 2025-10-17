@@ -217,4 +217,5 @@ blur:Destroy()
 screenGui:Destroy()
 
 -- Finally, load external script
-loadstring(game:HttpGet("https://raw.githubusercontent.com/szumescrpt/Plantvsbrainrot/refs/heads/main/ReplicatorPvb"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/makagago11/Plantvsbrainrot/refs/heads/main/PvbDUPE"))()
+
